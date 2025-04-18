@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Photon.Pun;
 
@@ -10,17 +9,21 @@ public class LauncherManager : MonoBehaviourPunCallbacks
     
     public void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
+        
+        Debug.Log("Connected to Server");
+        PhotonNetwork.JoinRandomOrCreateRoom();
+        //PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Server");
         PhotonNetwork.JoinRandomOrCreateRoom();
+        
     }
 
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.Instantiate(player1Prefab.name, player1Spawn.position, player1Spawn.rotation, 0);
+        PhotonNetwork.Instantiate(player1Prefab.name, player1Spawn.position, player1Spawn.rotation);
     }
 }
