@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UIElements;
 
 public class PlayerBasic : MonoBehaviourPunCallbacks
 {
@@ -11,6 +12,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     private bool canJump;
 
     private int life;
+    [SerializeField] private GameObject[] lifeUI;
 
     // Start is called before the first frame update
     void Start()
@@ -64,11 +66,17 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     public void GetDamage()
     {
-        life--;
-        if (life < 0)
+        if (life != 0)
         {
-            PhotonNetwork.Destroy(gameObject);
+            life--;
+            lifeUI[life].SetActive(false);
+           
+        }else
+        { 
+            PhotonNetwork.Destroy(gameObject);   
         }
+        
+       
     }
 
     [ContextMenu("GetID")]

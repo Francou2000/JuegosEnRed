@@ -14,4 +14,15 @@ public class WorldMovement : MonoBehaviour
         Vector3 movement = new Vector3(0,worldSpeedMultiplier*speed*Time.deltaTime,0);
         gameObject.transform.position += movement;
     }
+
+    public void StartGame()
+    {
+        
+        speed = 0.1f;
+    }
+
+    public void IncraseSpeed()
+    {
+        speed= speed * 2;
+    }
 }
