@@ -1,9 +1,49 @@
-using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LauncherManager : MonoBehaviourPunCallbacks
 {
+    private void Start()
+    {
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        }
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        PhotonNetwork.JoinRandomRoom();
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
+    }
+
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("Joined Room");
+
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            // Only MasterClient starts the game
+            PhotonNetwork.LoadLevel("GameSceneName");
+        }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            // In case MasterClient was already in room before second player joins
+            PhotonNetwork.LoadLevel("GameSceneName");
+        }
+    }
+}
+    /*
     [SerializeField] PhotonView player1Prefab;
     [SerializeField] Transform player1Spawn;
     [SerializeField] WorldMovement Map;
@@ -45,4 +85,4 @@ public class LauncherManager : MonoBehaviourPunCallbacks
         }
         
     }
-}
+    */

@@ -17,12 +17,11 @@ public class WorldMovement : MonoBehaviour
 
     public void StartGame()
     {
-        
         speed = 0.1f;
     }
 
     public void IncraseSpeed()
     {
-        speed= speed * 2;
+        speed = speed * 2;
     }
 }

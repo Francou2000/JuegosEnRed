@@ -203,6 +203,7 @@ MonoBehaviour:
   moveSpeed: 10
   jumpForce: 3
   moveFactor: 1
+  maxLives: 2
   lifeUI:
   - {fileID: 3266149799846357237}
   - {fileID: 8367906404258944317}

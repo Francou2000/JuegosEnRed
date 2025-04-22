@@ -11,7 +11,8 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     private Rigidbody2D playerRigidbody;
     private bool canJump;
 
-    private int life;
+    public int maxLives = 2;
+    private int currentLives;
     [SerializeField] private GameObject[] lifeUI;
 
     // Start is called before the first frame update
@@ -19,7 +20,10 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
         playerCollider = GetComponent<Collider2D>();
         playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
-        life = 3;
+        if (photonView.IsMine)
+        {
+            currentLives = maxLives; // Reset lives
+        }
 
     }
 
@@ -66,10 +70,10 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     public void GetDamage()
     {
-        if (life != 0)
+        if (currentLives != 0)
         {
-            life--;
-            lifeUI[life].SetActive(false);
+            currentLives--;
+            lifeUI[currentLives].SetActive(false);
            
         }else
         { 
