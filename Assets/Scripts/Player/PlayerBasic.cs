@@ -1,9 +1,11 @@
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UIElements;
+using System.Collections;
 
 public class PlayerBasic : MonoBehaviourPunCallbacks
 {
+    [Header("Stats")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float moveFactor;
@@ -15,12 +17,14 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     private int currentLives;
     [SerializeField] private GameObject[] lifeUI;
 
+    private bool gameEnded = false;
+
     void Start()
     {
         playerCollider = GetComponent<Collider2D>();
         playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
 
-        currentLives = maxLives; // Reset lives
+        currentLives = maxLives;
 
         if (!photonView.IsMine)
         {
@@ -35,17 +39,16 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (photonView.IsMine)
-        {
-            // LOCAL movement control
-            Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
-            transform.position += movement;
+        if (!photonView.IsMine) return;
+        if (gameEnded) return;
 
-            if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
-            {
-                playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
-                canJump = false;
-            }
+        Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
+        transform.position += movement;
+
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
+        {
+            playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
+            canJump = false;
         }
     }
 
@@ -77,8 +80,8 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
            
         }
         else
-        { 
-            PhotonNetwork.Destroy(gameObject);   
+        {
+            photonView.RPC("RPC_GameOver", RpcTarget.All, PhotonNetwork.NickName);
         }      
     }
 
@@ -93,5 +96,52 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     public void RPC_SetNickName(string nickName)
     {
        
+    }
+
+    [PunRPC]
+    public void RPC_GameOver(string loserNickname)
+    {
+        bool isLocalPlayerWinner = (PhotonNetwork.NickName != loserNickname);
+
+        if (isLocalPlayerWinner)
+        {
+            UIManager.Instance.ShowWinScreen();
+        }
+        else
+        {
+            UIManager.Instance.ShowLoseScreen();
+        }
+
+        //Stops players movement
+        PlayerBasic[] allPlayers = FindObjectsOfType<PlayerBasic>();
+        foreach (var player in allPlayers)
+        {
+            player.gameEnded = true;
+        }
+
+        //Stops world movement
+        if (GameManager.Instance.worldMovement != null)
+        {
+            GameManager.Instance.worldMovement.StopGame();
+        }
+
+        // Master client tells everyone when to load menu
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StartCoroutine(CallReturnToMenu());
+        }
+    }
+
+    private IEnumerator CallReturnToMenu()
+    {
+        yield return new WaitForSeconds(3f);
+
+        photonView.RPC("RPC_LoadMainMenu", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void RPC_LoadMainMenu()
+    {
+        PhotonNetwork.LoadLevel("MainMenu"); 
     }
 }

@@ -8,9 +8,7 @@ public class DamageTrigger : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             other.gameObject.GetComponent<PlayerBasic>().GetDamage();
-            //Debug.Log("Se hizo daño");
             other.transform.position = spawnPoint.position;
-
         }
     }
 }

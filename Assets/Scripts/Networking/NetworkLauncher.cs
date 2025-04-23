@@ -18,10 +18,8 @@ public class NetworkLauncher : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        // Ensure scenes stay in sync
         PhotonNetwork.AutomaticallySyncScene = true;
 
-        // UI initial state
         connectButton.onClick.AddListener(OnConnectClicked);
         nicknameInput.onValueChanged.AddListener(OnNicknameChanged);
         connectButton.interactable = false;
@@ -30,7 +28,6 @@ public class NetworkLauncher : MonoBehaviourPunCallbacks
 
     private void OnNicknameChanged(string value)
     {
-        // Enable button only if there's at least one character
         connectButton.interactable = !string.IsNullOrEmpty(value.Trim());
     }
 
