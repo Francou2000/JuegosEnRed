@@ -15,35 +15,25 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     private int currentLives;
     [SerializeField] private GameObject[] lifeUI;
 
-    // Start is called before the first frame update
     void Start()
     {
         playerCollider = GetComponent<Collider2D>();
         playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
-        if (photonView.IsMine)
-        {
-            currentLives = maxLives; // Reset lives
-        }
 
+        currentLives = maxLives; // Reset lives
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (photonView.IsMine)
         {
-            //float x = Input.GetAxis("Horizontal");
-            Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
+           Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
             transform.position += movement;
             if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
             {
-                Debug.Log("saltando");
                 playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
                 canJump = false;
             }
-            //transform.Translate(movement.normalized*moveSpeed*Time.deltaTime, Space.World);
-
-            //new Vector3(moveFactor,0,0)* moveSpeed * Time.deltaTime;
         }
     }
 
@@ -57,30 +47,28 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         if (!other.gameObject.CompareTag("Floor"))
         {
             ChangeDirection();
-            Debug.Log("toco piso");
-            // other.gameObject.GetComponent<PlayerBasic>().ChangeDirection();
-            // Debug.Log("Choco con otro pj");
+
         }
         else
         {
             canJump = true;
-            Debug.Log("ya puede saltar");
         }
     }
 
     public void GetDamage()
     {
+        if (!photonView.IsMine) return;
+
         if (currentLives != 0)
         {
             currentLives--;
             lifeUI[currentLives].SetActive(false);
            
-        }else
+        }
+        else
         { 
             PhotonNetwork.Destroy(gameObject);   
-        }
-        
-       
+        }      
     }
 
     [ContextMenu("GetID")]
@@ -95,5 +83,4 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
        
     }
-
 }

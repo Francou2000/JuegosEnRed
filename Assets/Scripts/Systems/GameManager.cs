@@ -29,10 +29,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
         Transform spawnPoint = spawnPoints[spawnIndex];
 
+        Debug.Log("Spawning player at spawn point: " + spawnPoint.name);
+
         GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
 
         PhotonNetwork.LocalPlayer.TagObject = player;
-        photonView.RPC("PlayerSpawned", RpcTarget.AllBuffered);
     }
 
     [PunRPC]
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (playersSpawned >= PhotonNetwork.CurrentRoom.PlayerCount)
         {
-            Debug.Log("All players spawned, starting world movement!");
+            //Debug.Log("All players spawned, starting world movement!");
             worldMovement.StartGame();
         }
     }

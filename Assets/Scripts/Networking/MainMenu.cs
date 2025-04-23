@@ -55,7 +55,7 @@ public class MainMenu : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to Master Server");
+        //Debug.Log("Connected to Master Server");
         PhotonNetwork.JoinRandomOrCreateRoom(); 
         //PhotonNetwork.LoadLevel(sceneToLoad);  
         
@@ -67,7 +67,7 @@ public class MainMenu : MonoBehaviourPunCallbacks
         if (PhotonNetwork.InRoom)
         {
             playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-            Debug.Log("Número de jugadores conectados: " + playerCount);
+            //Debug.Log("Número de jugadores conectados: " + playerCount);
             if (playerCount >= 2)PhotonNetwork.LoadLevel(sceneToLoad);
         }
     }

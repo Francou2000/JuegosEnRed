@@ -25,7 +25,7 @@ public class LauncherManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("Joined Room");
+        //Debug.Log("Joined Room");
 
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
@@ -55,10 +55,10 @@ public class LauncherManager : MonoBehaviourPunCallbacks
     {
        
         int playerNumer=PhotonNetwork.PlayerList.Length;
-        Debug.Log("Connected to Server");
+        //Debug.Log("Connected to Server");
         if (playerNumer > 2)
         {
-            Debug.Log("sala llena, modo observador activo");
+            //Debug.Log("sala llena, modo observador activo");
         }
         else
         {
@@ -69,7 +69,7 @@ public class LauncherManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to MASTER");
+        //Debug.Log("Connected to MASTER");
         //PhotonNetwork.JoinRandomOrCreateRoom();
         
     }
@@ -81,7 +81,7 @@ public class LauncherManager : MonoBehaviourPunCallbacks
         {
             int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
             if (playerCount >= 2)Map.StartGame();
-            Debug.Log("Número de jugadores conectados: " + playerCount);
+            //Debug.Log("Número de jugadores conectados: " + playerCount);
         }
         
     }
