@@ -7,6 +7,8 @@ public class LauncherManager : MonoBehaviourPunCallbacks
 {
     private void Start()
     {
+        PhotonNetwork.AutomaticallySyncScene = true;
+
         if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.ConnectUsingSettings();
@@ -25,11 +27,10 @@ public class LauncherManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        //Debug.Log("Joined Room");
+        Debug.Log("Joined Room");
 
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
-            // Only MasterClient starts the game
             PhotonNetwork.LoadLevel("GameSceneName");
         }
     }
@@ -38,7 +39,6 @@ public class LauncherManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
-            // In case MasterClient was already in room before second player joins
             PhotonNetwork.LoadLevel("GameSceneName");
         }
     }

@@ -26,14 +26,15 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void SpawnPlayer()
     {
-        int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
-        Transform spawnPoint = spawnPoints[spawnIndex];
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
+            Transform spawnPoint = spawnPoints[spawnIndex];
 
-        Debug.Log("Spawning player at spawn point: " + spawnPoint.name);
+            GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
 
-        GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
-
-        PhotonNetwork.LocalPlayer.TagObject = player;
+            PhotonNetwork.LocalPlayer.TagObject = player;
+        }
     }
 
     [PunRPC]

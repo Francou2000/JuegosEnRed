@@ -25,15 +25,16 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (photonView.IsMine)
+        if (!photonView.IsMine) return; // Move only if this is your own player
+
+        // Your movement logic
+        Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
+        transform.position += movement;
+
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
         {
-           Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
-            transform.position += movement;
-            if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
-            {
-                playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
-                canJump = false;
-            }
+            playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
+            canJump = false;
         }
     }
 
