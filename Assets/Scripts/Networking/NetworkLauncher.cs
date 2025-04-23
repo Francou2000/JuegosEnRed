@@ -24,11 +24,6 @@ public class NetworkLauncher : MonoBehaviourPunCallbacks
         nicknameInput.onValueChanged.AddListener(OnNicknameChanged);
         connectButton.interactable = false;
         waitingText.SetActive(false);
-
-        if (PhotonNetwork.InRoom)
-        {
-            PhotonNetwork.LeaveRoom(); // Leave from previous match
-        }
     }
 
     private void OnNicknameChanged(string value)

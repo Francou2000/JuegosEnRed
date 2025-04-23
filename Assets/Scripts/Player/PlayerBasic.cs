@@ -136,12 +136,23 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(3f);
 
-        photonView.RPC("RPC_LoadMainMenu", RpcTarget.All);
+        photonView.RPC("RPC_LeaveRoomAndLoadMenu", RpcTarget.All);
     }
 
     [PunRPC]
-    public void RPC_LoadMainMenu()
+    public void RPC_LeaveRoomAndLoadMenu()
     {
-        PhotonNetwork.LoadLevel("MainMenu"); 
+        StartCoroutine(LeaveAndLoad());
+    }
+
+    private IEnumerator LeaveAndLoad()
+    {
+        PhotonNetwork.AutomaticallySyncScene = false;
+        PhotonNetwork.LeaveRoom();
+
+        while (PhotonNetwork.InRoom)
+            yield return null;
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 }
