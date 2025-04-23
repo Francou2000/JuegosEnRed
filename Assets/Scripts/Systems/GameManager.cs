@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GameObject playerPrefab;
     private int playersSpawned = 0;
 
-    public WorldMovement worldMovement; // Drag WorldMovement here
+    public WorldMovement worldMovement;
 
     private void Awake()
     {
@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
 
             PhotonNetwork.LocalPlayer.TagObject = player;
+
+            photonView.RPC("PlayerSpawned", RpcTarget.AllBuffered);
         }
     }
 
@@ -44,7 +46,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (playersSpawned >= PhotonNetwork.CurrentRoom.PlayerCount)
         {
-            //Debug.Log("All players spawned, starting world movement!");
             worldMovement.StartGame();
         }
     }
