@@ -43,6 +43,13 @@ public class NetworkLauncher : MonoBehaviourPunCallbacks
         // Connect (if needed)
         if (!PhotonNetwork.IsConnected)
             PhotonNetwork.ConnectUsingSettings();
+        else 
+        {
+            PhotonNetwork.JoinRandomOrCreateRoom(
+            roomOptions: new RoomOptions { MaxPlayers = 2 },
+            typedLobby: TypedLobby.Default
+            );
+        }
     }
 
     public override void OnConnectedToMaster()

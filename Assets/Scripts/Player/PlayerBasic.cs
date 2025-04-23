@@ -40,6 +40,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     void Update()
     {
         if (!photonView.IsMine) return;
+
         if (gameEnded) return;
 
         Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
@@ -76,8 +77,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         if (currentLives != 0)
         {
             currentLives--;
-            lifeUI[currentLives].SetActive(false);
-           
+            lifeUI[currentLives].SetActive(false);          
         }
         else
         {
