@@ -21,20 +21,31 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
 
         currentLives = maxLives; // Reset lives
+
+        if (!photonView.IsMine)
+        {
+            // Disable life UI for remote players
+            Canvas canvas = GetComponentInChildren<Canvas>();
+            if (canvas != null)
+            {
+                canvas.enabled = false;
+            }
+        }
     }
 
     void Update()
     {
-        if (!photonView.IsMine) return; // Move only if this is your own player
-
-        // Your movement logic
-        Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
-        transform.position += movement;
-
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
+        if (photonView.IsMine)
         {
-            playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
-            canJump = false;
+            // LOCAL movement control
+            Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
+            transform.position += movement;
+
+            if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
+            {
+                playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
+                canJump = false;
+            }
         }
     }
 
@@ -48,7 +59,6 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         if (!other.gameObject.CompareTag("Floor"))
         {
             ChangeDirection();
-
         }
         else
         {
