@@ -44,6 +44,8 @@ MonoBehaviour:
   - RPC_GameOver
   - RPC_LoadMainMenu
   - RPC_LeaveRoomAndLoadMenu
+  - RPC_AssignPlayer
+  - RPC_StartWorld
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

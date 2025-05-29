@@ -1,59 +1,64 @@
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
 
-    public Transform[] spawnPoints;
-    public GameObject playerPrefab;
-    private int playersSpawned = 0;
-
+    [Header("References")]
+    [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private GameObject playerPrefab;
     public WorldMovement worldMovement;
+
+    private Dictionary<int, GameObject> spawnedPlayers = new Dictionary<int, GameObject>();
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this;
     }
 
     private void Start()
     {
-        if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.LocalPlayer.TagObject == null)
+        if (PhotonNetwork.IsMasterClient)
         {
-            SpawnPlayer();
+            SpawnAllPlayers();
         }
     }
 
-    private void SpawnPlayer()
+    private void SpawnAllPlayers()
     {
-        if (PhotonNetwork.IsConnectedAndReady)
+        foreach (Player player in PhotonNetwork.PlayerList)
         {
-            int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
-            Transform spawnPoint = spawnPoints[spawnIndex];
+            int actorNumber = player.ActorNumber;
+            int spawnIndex = actorNumber % spawnPoints.Length;
+            Vector3 spawnPos = spawnPoints[spawnIndex].position;
 
-            GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
+            GameObject playerObj = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity, 0);
+            spawnedPlayers[actorNumber] = playerObj;
 
-            PhotonNetwork.LocalPlayer.TagObject = player;
-
-            photonView.RPC("PlayerSpawned", RpcTarget.AllBuffered);
+            photonView.RPC("RPC_AssignPlayer", player, playerObj.GetComponent<PhotonView>().ViewID);
         }
+
+        Invoke(nameof(StartGame), 1.0f); // Delay start to allow setup
+    }
+
+    private void StartGame()
+    {
+        photonView.RPC("RPC_StartWorld", RpcTarget.All);
     }
 
     [PunRPC]
-    private void PlayerSpawned()
+    private void RPC_AssignPlayer(int viewID)
     {
-        playersSpawned++;
+        GameObject playerObj = PhotonView.Find(viewID).gameObject;
+        PhotonNetwork.LocalPlayer.TagObject = playerObj;
+    }
 
-        if (playersSpawned >= PhotonNetwork.CurrentRoom.PlayerCount)
-        {
-            worldMovement.StartGame();
-        }
+    [PunRPC]
+    private void RPC_StartWorld()
+    {
+        worldMovement.StartGame();
     }
 }
