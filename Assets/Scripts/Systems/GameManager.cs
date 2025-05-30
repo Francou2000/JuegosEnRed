@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void StartGame()
     {
         photonView.RPC("RPC_StartWorld", RpcTarget.All);
+        ModuleManager.Instance.InitializeModules();
     }
 
     [PunRPC]
