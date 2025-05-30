@@ -128,7 +128,7 @@ MonoBehaviour:
   moveSpeed: 10
   jumpForce: 3
   moveFactor: 1
-  maxLives: 2
+  maxLives: 3
   gameEnded: 0
 --- !u!114 &5484113153652587157
 MonoBehaviour:

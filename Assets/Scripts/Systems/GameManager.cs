@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject playerPrefab;
     public WorldMovement worldMovement;
 
+    private int playersReady = 0;
+
     private Dictionary<int, GameObject> spawnedPlayers = new Dictionary<int, GameObject>();
 
     private void Awake()
@@ -22,27 +24,20 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.LocalPlayer.TagObject == null)
         {
-            SpawnAllPlayers();
+            SpawnLocalPlayer();
         }
     }
 
-    private void SpawnAllPlayers()
+    private void SpawnLocalPlayer()
     {
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            int actorNumber = player.ActorNumber;
-            int spawnIndex = actorNumber % spawnPoints.Length;
-            Vector3 spawnPos = spawnPoints[spawnIndex].position;
+        int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
+        Vector3 spawnPos = spawnPoints[spawnIndex].position;
 
-            GameObject playerObj = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity, 0);
-            spawnedPlayers[actorNumber] = playerObj;
-
-            photonView.RPC("RPC_AssignPlayer", player, playerObj.GetComponent<PhotonView>().ViewID);
-        }
-
-        Invoke(nameof(StartGame), 1.0f); // Delay start to allow setup
+        GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity);
+        PhotonNetwork.LocalPlayer.TagObject = player;
+        photonView.RPC("RPC_PlayerSpawned", RpcTarget.MasterClient);
     }
 
     private void StartGame()
@@ -109,5 +104,24 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
+
+    [PunRPC]
+    private void RPC_PlayerSpawned()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        playersReady++;
+
+        if (playersReady >= PhotonNetwork.CurrentRoom.PlayerCount)
+        {
+            photonView.RPC("RPC_StartGame", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_StartGame()
+    {
+        worldMovement.StartGame();
     }
 }

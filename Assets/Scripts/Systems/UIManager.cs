@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -29,9 +30,12 @@ public class UIManager : MonoBehaviour
     {
         for (int i = 0; i < lifeHearts.Length; i++)
         {
-            lifeHearts[i].SetActive(i < livesLeft); // Show hearts from left to right
-            Debug.Log($"Updating UI: {livesLeft} lives remaining");
+            if (lifeHearts[i] == null)
+            {
+                continue;
+            }
 
+            lifeHearts[i].SetActive(i < livesLeft);
         }
     }
 

@@ -15,7 +15,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     private bool canJump;
 
     [Header("Health")]
-    public int maxLives = 3;
+    [SerializeField]private int maxLives = 3;
     private int currentLives;
 
     public bool gameEnded = false;
@@ -31,8 +31,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         if (photonView.IsMine)
         {
             yield return new WaitUntil(() => UIManager.Instance != null);
-            uiManager = UIManager.Instance;
-            uiManager.UpdateLivesUI(currentLives);
+            UIManager.Instance.UpdateLivesUI(currentLives);
         }
     }
 
@@ -70,8 +69,6 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     public void GetDamage()
     {
         if (!photonView.IsMine || gameEnded) return;
-
-        Debug.Log($"[{PhotonNetwork.NickName}] Took damage, lives left: {currentLives}");
 
         if (currentLives > 0)
         {
