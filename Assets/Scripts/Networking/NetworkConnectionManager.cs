@@ -20,7 +20,6 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject); // Optional, if you want it persistent across scenes
 
         PhotonNetwork.AutomaticallySyncScene = true;
 

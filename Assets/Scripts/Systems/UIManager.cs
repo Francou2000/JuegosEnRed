@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance;
+    public static UIManager Instance { get; private set; }
 
-    [Header("Game Over Screens")]
-    [SerializeField] private GameObject winScreen;
-    [SerializeField] private GameObject loseScreen;
+    [Header("Panels")]
+    public GameObject winPanel;
+    public GameObject losePanel;
+
+    [Header("Lives UI")]
+    public GameObject[] lifeHearts;
 
     private void Awake()
     {
@@ -22,13 +25,23 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void UpdateLivesUI(int livesLeft)
+    {
+        for (int i = 0; i < lifeHearts.Length; i++)
+        {
+            lifeHearts[i].SetActive(i < livesLeft); // Show hearts from left to right
+            Debug.Log($"Updating UI: {livesLeft} lives remaining");
+
+        }
+    }
+
     public void ShowWinScreen()
     {
-        winScreen.SetActive(true);
+        winPanel.SetActive(true);
     }
 
     public void ShowLoseScreen()
     {
-        loseScreen.SetActive(true);
+        losePanel.SetActive(true);
     }
 }

@@ -5,10 +5,14 @@ public class DamageTrigger : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<PlayerBasic>().GetDamage();
-            other.transform.position = spawnPoint.position;
+            var player = other.GetComponent<PlayerBasic>();
+            if (player != null && player.photonView.IsMine)
+            {
+                player.GetDamage();
+                other.transform.position = spawnPoint.position;
+            }
         }
     }
 }

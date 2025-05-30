@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -60,5 +61,53 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void RPC_StartWorld()
     {
         worldMovement.StartGame();
+    }
+
+
+    [PunRPC]
+    public void RPC_ReportDeath(string deadPlayer)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        // Only MasterClient will execute this
+        photonView.RPC("RPC_GameOver", RpcTarget.All, deadPlayer);
+    }
+
+    [PunRPC]
+    public void RPC_GameOver(string loser)
+    {
+        bool isWinner = PhotonNetwork.NickName != loser;
+
+        if (isWinner)
+            UIManager.Instance.ShowWinScreen();
+        else
+            UIManager.Instance.ShowLoseScreen();
+
+        // Stop movement and world
+        PlayerBasic[] players = FindObjectsOfType<PlayerBasic>();
+        foreach (var p in players)
+            p.gameEnded = true;
+
+        GameManager.Instance.worldMovement.StopGame();
+
+        StartCoroutine(CallReturnToMenu());
+    }
+
+    private IEnumerator CallReturnToMenu()
+    {
+        yield return new WaitForSeconds(5f);
+
+        // Leave room cleanly
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.AutomaticallySyncScene = false;
+            PhotonNetwork.LeaveRoom();
+        }
+    }
+
+    public override void OnLeftRoom()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 }

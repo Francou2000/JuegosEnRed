@@ -9,39 +9,36 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float moveFactor;
+
     private Collider2D playerCollider;
     private Rigidbody2D playerRigidbody;
     private bool canJump;
 
-    public int maxLives = 2;
+    [Header("Health")]
+    public int maxLives = 3;
     private int currentLives;
-    [SerializeField] private GameObject[] lifeUI;
 
-    private bool gameEnded = false;
+    public bool gameEnded = false;
 
-    void Start()
+    private UIManager uiManager;
+
+    private IEnumerator Start()
     {
         playerCollider = GetComponent<Collider2D>();
-        playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
-
+        playerRigidbody = GetComponent<Rigidbody2D>();
         currentLives = maxLives;
 
-        if (!photonView.IsMine)
+        if (photonView.IsMine)
         {
-            // Disable life UI for remote players
-            Canvas canvas = GetComponentInChildren<Canvas>();
-            if (canvas != null)
-            {
-                canvas.enabled = false;
-            }
+            yield return new WaitUntil(() => UIManager.Instance != null);
+            uiManager = UIManager.Instance;
+            uiManager.UpdateLivesUI(currentLives);
         }
     }
 
     void Update()
     {
-        if (!photonView.IsMine) return;
-
-        if (gameEnded) return;
+        if (!photonView.IsMine || gameEnded) return;
 
         Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
         transform.position += movement;
@@ -55,7 +52,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     public void ChangeDirection()
     {
-        moveFactor = moveFactor * -1;
+        moveFactor *= -1;
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -72,17 +69,20 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     public void GetDamage()
     {
-        if (!photonView.IsMine) return;
+        if (!photonView.IsMine || gameEnded) return;
 
-        if (currentLives != 0)
+        Debug.Log($"[{PhotonNetwork.NickName}] Took damage, lives left: {currentLives}");
+
+        if (currentLives > 0)
         {
             currentLives--;
-            lifeUI[currentLives].SetActive(false);          
+            UIManager.Instance.UpdateLivesUI(currentLives);
         }
-        else
+
+        if (currentLives <= 0)
         {
-            photonView.RPC("RPC_GameOver", RpcTarget.All, PhotonNetwork.NickName);
-        }      
+            GameManager.Instance.photonView.RPC("RPC_ReportDeath", RpcTarget.MasterClient, PhotonNetwork.NickName);
+        }
     }
 
     [ContextMenu("GetID")]
@@ -90,69 +90,5 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
         print(photonView.ViewID);
         print(PhotonNetwork.NickName);
-    }
-
-    [PunRPC]
-    public void RPC_SetNickName(string nickName)
-    {
-       
-    }
-
-    [PunRPC]
-    public void RPC_GameOver(string loserNickname)
-    {
-        bool isLocalPlayerWinner = (PhotonNetwork.NickName != loserNickname);
-
-        if (isLocalPlayerWinner)
-        {
-            UIManager.Instance.ShowWinScreen();
-        }
-        else
-        {
-            UIManager.Instance.ShowLoseScreen();
-        }
-
-        //Stops players movement
-        PlayerBasic[] allPlayers = FindObjectsOfType<PlayerBasic>();
-        foreach (var player in allPlayers)
-        {
-            player.gameEnded = true;
-        }
-
-        //Stops world movement
-        if (GameManager.Instance.worldMovement != null)
-        {
-            GameManager.Instance.worldMovement.StopGame();
-        }
-
-        // Master client tells everyone when to load menu
-        if (PhotonNetwork.IsMasterClient)
-        {
-            StartCoroutine(CallReturnToMenu());
-        }
-    }
-
-    private IEnumerator CallReturnToMenu()
-    {
-        yield return new WaitForSeconds(3f);
-
-        photonView.RPC("RPC_LeaveRoomAndLoadMenu", RpcTarget.All);
-    }
-
-    [PunRPC]
-    public void RPC_LeaveRoomAndLoadMenu()
-    {
-        StartCoroutine(LeaveAndLoad());
-    }
-
-    private IEnumerator LeaveAndLoad()
-    {
-        PhotonNetwork.AutomaticallySyncScene = false;
-        PhotonNetwork.LeaveRoom();
-
-        while (PhotonNetwork.InRoom)
-            yield return null;
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 }
