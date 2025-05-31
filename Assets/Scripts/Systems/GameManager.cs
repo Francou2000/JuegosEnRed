@@ -1,8 +1,8 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public WorldMovement worldMovement;
 
     private int playersReady = 0;
-
     private Dictionary<int, GameObject> spawnedPlayers = new Dictionary<int, GameObject>();
 
     private void Awake()
@@ -24,10 +23,25 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.LocalPlayer.TagObject == null)
+        if (!PhotonNetwork.IsConnectedAndReady) return;
+
+        if (PhotonNetwork.IsMasterClient)
         {
-            SpawnLocalPlayer();
+            Debug.Log("[GameManager] MasterClient initializing modules...");
+            ModuleManager.Instance.InitializeModules();
+            StartCoroutine(WaitThenSpawnPlayer());
         }
+        else
+        {
+            Debug.Log("[GameManager] Waiting for modules...");
+            StartCoroutine(WaitThenSpawnPlayer());
+        }
+    }
+
+    private IEnumerator WaitThenSpawnPlayer()
+    {
+        yield return new WaitForSeconds(1.0f); // Allow modules to load first
+        SpawnLocalPlayer();
     }
 
     private void SpawnLocalPlayer()
@@ -35,30 +49,35 @@ public class GameManager : MonoBehaviourPunCallbacks
         int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
         Vector3 spawnPos = spawnPoints[spawnIndex].position;
 
+        Debug.Log($"[GameManager] Spawning player for {PhotonNetwork.NickName} at index {spawnIndex}");
+
         GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity);
         PhotonNetwork.LocalPlayer.TagObject = player;
+
+        // Tell MasterClient this player is ready
         photonView.RPC("RPC_PlayerSpawned", RpcTarget.MasterClient);
     }
 
-    private void StartGame()
-    {
-        photonView.RPC("RPC_StartWorld", RpcTarget.All);
-        ModuleManager.Instance.InitializeModules();
-    }
-
     [PunRPC]
-    private void RPC_AssignPlayer(int viewID)
+    private void RPC_PlayerSpawned()
     {
-        GameObject playerObj = PhotonView.Find(viewID).gameObject;
-        PhotonNetwork.LocalPlayer.TagObject = playerObj;
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        playersReady++;
+        Debug.Log($"[GameManager] Player ready. Count = {playersReady}/{PhotonNetwork.CurrentRoom.PlayerCount}");
+
+        if (playersReady >= PhotonNetwork.CurrentRoom.PlayerCount)
+        {
+            photonView.RPC("RPC_StartWorld", RpcTarget.All);
+        }
     }
 
     [PunRPC]
     private void RPC_StartWorld()
     {
+        Debug.Log("[GameManager] Starting world movement.");
         worldMovement.StartGame();
     }
-
 
     [PunRPC]
     public void RPC_ReportDeath(string deadPlayer)
@@ -66,7 +85,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        // Only MasterClient will execute this
         photonView.RPC("RPC_GameOver", RpcTarget.All, deadPlayer);
     }
 
@@ -80,13 +98,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         else
             UIManager.Instance.ShowLoseScreen();
 
-        // Stop movement and world
+        // Freeze all players
         PlayerBasic[] players = FindObjectsOfType<PlayerBasic>();
         foreach (var p in players)
             p.gameEnded = true;
 
-        GameManager.Instance.worldMovement.StopGame();
-
+        worldMovement.StopGame();
         StartCoroutine(CallReturnToMenu());
     }
 
@@ -94,7 +111,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(5f);
 
-        // Leave room cleanly
         if (PhotonNetwork.InRoom)
         {
             PhotonNetwork.AutomaticallySyncScene = false;
@@ -105,24 +121,5 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
-    }
-
-    [PunRPC]
-    private void RPC_PlayerSpawned()
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-
-        playersReady++;
-
-        if (playersReady >= PhotonNetwork.CurrentRoom.PlayerCount)
-        {
-            photonView.RPC("RPC_StartGame", RpcTarget.All);
-        }
-    }
-
-    [PunRPC]
-    private void RPC_StartGame()
-    {
-        worldMovement.StartGame();
     }
 }

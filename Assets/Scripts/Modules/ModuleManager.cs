@@ -22,9 +22,21 @@ public class ModuleManager : MonoBehaviourPun
 
     public void InitializeModules()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("Not MasterClient. Module init skipped.");
+            return;
+        }
+
+        Debug.Log("Initializing modules...");
 
         Vector3 spawnPos = Vector3.zero;
+
+        if (startModule == null)
+        {
+            Debug.LogError("Start module is not assigned!");
+            return;
+        }
 
         // Spawn starting module
         GameObject start = PhotonNetwork.Instantiate(startModule.name, spawnPos, Quaternion.identity);
@@ -46,8 +58,15 @@ public class ModuleManager : MonoBehaviourPun
 
     private void AddRandomModule(Vector3 position)
     {
+        if (modulePool.Count == 0)
+        {
+            Debug.LogError("Module pool is empty!");
+            return;
+        }
+
         GameObject prefab = modulePool[Random.Range(0, modulePool.Count)];
         GameObject module = PhotonNetwork.Instantiate(prefab.name, position, Quaternion.identity);
+        Debug.Log($"Spawned module: {prefab.name} at {position}");
         activeModules.Add(module);
 
         SpawnEnemiesInModule(module);
