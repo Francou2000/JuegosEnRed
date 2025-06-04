@@ -52,8 +52,17 @@ public class ModuleManager : MonoBehaviourPun
 
     private Vector3 GetNextModuleTop()
     {
-        Transform lastTop = activeModules[activeModules.Count - 1].transform.Find("ModuleTopMarker");
-        return lastTop != null ? lastTop.position : Vector3.zero;
+        GameObject lastModule = activeModules[activeModules.Count - 1];
+        Transform lastTop = lastModule.transform.Find("ModuleTopMarker");
+
+        if (lastTop == null)
+        {
+            Debug.LogError($"ModuleTopMarker NOT found in: {lastModule.name}");
+            return Vector3.zero;
+        }
+
+        Debug.Log($"Found ModuleTopMarker at: {lastTop.position} for {lastModule.name}");
+        return lastTop.position;
     }
 
     private void AddRandomModule(Vector3 position)
