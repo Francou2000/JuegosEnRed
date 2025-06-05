@@ -1,17 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class ModuleCleanup : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("CleanupZone"))
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        if (other.CompareTag("Module"))
         {
-            if (ModuleManager.Instance != null)
-            {
-                ModuleManager.Instance.RemoveModule(transform.parent.gameObject);
-            }
+            ModuleManager.Instance.CycleModules();
         }
     }
 }

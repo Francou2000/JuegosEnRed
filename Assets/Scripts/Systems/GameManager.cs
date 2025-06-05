@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Header("References")]
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private GameObject playerPrefab;
-    public WorldMovement worldMovement;
+    [SerializeField] private CameraMover cam;
 
     private int playersReady = 0;
     private Dictionary<int, GameObject> spawnedPlayers = new Dictionary<int, GameObject>();
@@ -70,13 +70,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_StartWorld()
     {
-        if (worldMovement == null)
+        if (cam == null)
         {
-            Debug.LogError("[GameManager] WorldMovement reference is missing!");
+            Debug.LogError("[GameManager] CameraMover reference is missing!");
             return;
         }
 
-        worldMovement.StartGame();
+        cam.StartCamera();
     }
 
     [PunRPC]
@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         foreach (var p in players)
             p.gameEnded = true;
 
-        worldMovement.StopGame();
+        cam.StopCamera();
         StartCoroutine(CallReturnToMenu());
     }
 

@@ -11,13 +11,13 @@ public class ModuleManager : MonoBehaviourPun
     public List<GameObject> modulePool;
 
     [Header("Settings")]
-    public int activeModuleCount = 3;
     [SerializeField] private float moduleHeight = 20f;
     [SerializeField] private float horizontalOffset = 11f;
 
-    private List<GameObject> activeModules = new List<GameObject>();
+    private GameObject lastModule;
+    private GameObject currentModule;
+    private GameObject nextModule;
 
-    [SerializeField] private WorldMovement worldMovement;
 
     private void Awake()
     {
@@ -26,49 +26,28 @@ public class ModuleManager : MonoBehaviourPun
 
     public void InitializeModules()
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return;
-        }
+        if (!PhotonNetwork.IsMasterClient) return;
 
         Vector3 spawnPos = new Vector3(horizontalOffset, 0f, 0f);
 
-        if (startModule == null)
-        {
-            Debug.LogError("Start module is not assigned!");
-            return;
-        }
+        // Start with current module
+        currentModule = PhotonNetwork.Instantiate(startModule.name, spawnPos, Quaternion.identity);
 
-        // Spawn starting module
-        GameObject start = PhotonNetwork.Instantiate(startModule.name, spawnPos, Quaternion.identity);
-        start.transform.SetParent(WorldMovement.Instance.transform, true);
+        // Add next module on top
+        Vector3 nextPos = spawnPos + Vector3.up * moduleHeight;
+        nextModule = AddRandomModule(nextPos);
 
-        activeModules.Add(start);
-        SpawnEnemiesInModule(start);
-
-        // Add random modules
-        for (int i = 1; i < activeModuleCount; i++)
-        {
-            spawnPos = GetNextModuleTop();
-            AddRandomModule(spawnPos);
-        }
+        // Add a "last" module underneath
+        Vector3 lastPos = spawnPos - Vector3.up * moduleHeight;
+        lastModule = PhotonNetwork.Instantiate(startModule.name, lastPos, Quaternion.identity);
     }
 
-    private Vector3 GetNextModuleTop()
-    {
-        if (activeModules.Count == 0)
-            return Vector3.zero;
-
-        Vector3 lastPos = activeModules[activeModules.Count - 1].transform.position;
-        return lastPos + new Vector3(0f, moduleHeight, 0f);
-    }
-
-    private void AddRandomModule(Vector3 position)
+    private GameObject AddRandomModule(Vector3 position)
     {
         if (modulePool.Count == 0)
         {
             Debug.LogError("Module pool is empty!");
-            return;
+            return null;
         }
 
         GameObject prefab = modulePool[Random.Range(0, modulePool.Count)];
@@ -77,22 +56,24 @@ public class ModuleManager : MonoBehaviourPun
         Vector3 spawnPosition = position;
 
         GameObject module = PhotonNetwork.Instantiate(prefab.name, spawnPosition, Quaternion.identity);
-        module.transform.SetParent(WorldMovement.Instance.transform, true);
-        activeModules.Add(module);
-
+        
         SpawnEnemiesInModule(module);
+
+        return module;     
     }
 
-    public void RemoveModule(GameObject module)
+    public void CycleModules()
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
-        activeModules.Remove(module);
-        PhotonNetwork.Destroy(module);
+        PhotonNetwork.Destroy(lastModule);
 
-        // Add new module on top
-        Vector3 newTop = GetNextModuleTop();
-        AddRandomModule(newTop);
+        // Slide references
+        lastModule = currentModule;
+        currentModule = nextModule;
+
+        Vector3 newPos = currentModule.transform.position + Vector3.up * moduleHeight;
+        nextModule = AddRandomModule(newPos);
     }
 
     private void SpawnEnemiesInModule(GameObject module)
@@ -121,5 +102,22 @@ public class ModuleManager : MonoBehaviourPun
             case EnemySpawnPoint.EnemyType.Ranged: return "RangedEnemy";
             default: return "";
         }
+    }
+
+    public Transform[] GetCurrentPlayerSpawns()
+    {
+        Transform spawnParent = currentModule.transform.Find("PlayerSpawns");
+
+        if (spawnParent == null)
+        {
+            Debug.LogError("No PlayerSpawns found in current module.");
+            return new Transform[0];
+        }
+
+        Transform[] spawns = new Transform[spawnParent.childCount];
+        for (int i = 0; i < spawnParent.childCount; i++)
+            spawns[i] = spawnParent.GetChild(i);
+
+        return spawns;
     }
 }

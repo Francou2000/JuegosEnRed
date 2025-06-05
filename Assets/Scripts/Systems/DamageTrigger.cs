@@ -14,5 +14,14 @@ public class DamageTrigger : MonoBehaviour
                 other.transform.position = spawnPoint.position;
             }
         }
+        if (other.CompareTag("Enemy"))
+        {
+            var enemy = other.GetComponent<EnemyBase>();
+            if (enemy != null && enemy.photonView.IsMine)
+            {
+                enemy.HandleStomp();
+                other.transform.position = spawnPoint.position;
+            }
+        }
     }
 }
