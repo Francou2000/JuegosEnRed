@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,12 +8,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance;
 
     [Header("References")]
-    [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private CameraMover cam;
 
     private int playersReady = 0;
-    private Dictionary<int, GameObject> spawnedPlayers = new Dictionary<int, GameObject>();
 
     private void Awake()
     {
@@ -27,30 +24,36 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
+            Debug.Log("[GameManager] MasterClient initializing modules...");
             ModuleManager.Instance.InitializeModules();
-            StartCoroutine(WaitThenSpawnPlayer());
         }
-        else
-        {
-            StartCoroutine(WaitThenSpawnPlayer());
-        }
+
+        StartCoroutine(WaitThenSpawnPlayer());
     }
 
     private IEnumerator WaitThenSpawnPlayer()
     {
-        yield return new WaitForSeconds(1.0f); // Allow modules to load first
+        yield return new WaitUntil(() => ModuleManager.Instance.GetCurrentPlayerSpawns().Length > 0);
+
         SpawnLocalPlayer();
     }
 
     private void SpawnLocalPlayer()
     {
-        int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
-        Vector3 spawnPos = spawnPoints[spawnIndex].position;
+        Transform[] spawns = ModuleManager.Instance.GetCurrentPlayerSpawns();
+        if (spawns.Length == 0)
+        {
+            Debug.LogError("[GameManager] No spawn points found.");
+            return;
+        }
+
+        int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawns.Length;
+        Vector3 spawnPos = spawns[spawnIndex].position;
+        Debug.Log($"[GameManager] Spawning player at {spawnPos}...");
 
         GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity);
         PhotonNetwork.LocalPlayer.TagObject = player;
 
-        // Tell MasterClient this player is ready
         photonView.RPC("RPC_PlayerSpawned", RpcTarget.MasterClient);
     }
 
@@ -75,6 +78,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             Debug.LogError("[GameManager] CameraMover reference is missing!");
             return;
         }
+        Debug.Log("[GameManager] Starting camera.");
 
         cam.StartCamera();
     }

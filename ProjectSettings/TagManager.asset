@@ -7,7 +7,6 @@ TagManager:
   - Floor
   - Enemy
   - Module
-  - CleanupZone
   layers:
   - Default
   - TransparentFX
