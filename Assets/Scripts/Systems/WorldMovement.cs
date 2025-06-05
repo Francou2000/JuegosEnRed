@@ -9,6 +9,13 @@ public class WorldMovement : MonoBehaviour
     [SerializeField]private float speed;
     private bool isMoving = false;
 
+    public static WorldMovement Instance;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     public void Update()
     {
         if (!isMoving) return;

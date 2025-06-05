@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class EnemyProjectile : MonoBehaviour
+public class EnemyProjectile : MonoBehaviourPun
 {
     public float lifeTime = 5f;
 
@@ -24,9 +25,6 @@ public class EnemyProjectile : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (other.CompareTag("Ground"))
-        {
-            Destroy(gameObject);
-        }
+        Destroy(gameObject);  
     }
 }

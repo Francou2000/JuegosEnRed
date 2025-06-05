@@ -27,13 +27,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("[GameManager] MasterClient initializing modules...");
             ModuleManager.Instance.InitializeModules();
             StartCoroutine(WaitThenSpawnPlayer());
         }
         else
         {
-            Debug.Log("[GameManager] Waiting for modules...");
             StartCoroutine(WaitThenSpawnPlayer());
         }
     }
@@ -49,8 +47,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;
         Vector3 spawnPos = spawnPoints[spawnIndex].position;
 
-        Debug.Log($"[GameManager] Spawning player for {PhotonNetwork.NickName} at index {spawnIndex}");
-
         GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity);
         PhotonNetwork.LocalPlayer.TagObject = player;
 
@@ -64,7 +60,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient) return;
 
         playersReady++;
-        Debug.Log($"[GameManager] Player ready. Count = {playersReady}/{PhotonNetwork.CurrentRoom.PlayerCount}");
 
         if (playersReady >= PhotonNetwork.CurrentRoom.PlayerCount)
         {
@@ -75,7 +70,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_StartWorld()
     {
-        Debug.Log("[GameManager] Starting world movement.");
+        if (worldMovement == null)
+        {
+            Debug.LogError("[GameManager] WorldMovement reference is missing!");
+            return;
+        }
+
         worldMovement.StartGame();
     }
 

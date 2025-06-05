@@ -28,11 +28,8 @@ public class ModuleManager : MonoBehaviourPun
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("Not MasterClient. Module init skipped.");
             return;
         }
-
-        Debug.Log("Initializing modules...");
 
         Vector3 spawnPos = new Vector3(horizontalOffset, 0f, 0f);
 
@@ -44,7 +41,7 @@ public class ModuleManager : MonoBehaviourPun
 
         // Spawn starting module
         GameObject start = PhotonNetwork.Instantiate(startModule.name, spawnPos, Quaternion.identity);
-        start.transform.SetParent(worldMovement.transform);
+        start.transform.SetParent(WorldMovement.Instance.transform, true);
 
         activeModules.Add(start);
         SpawnEnemiesInModule(start);
@@ -80,7 +77,7 @@ public class ModuleManager : MonoBehaviourPun
         Vector3 spawnPosition = position;
 
         GameObject module = PhotonNetwork.Instantiate(prefab.name, spawnPosition, Quaternion.identity);
-        module.transform.SetParent(worldMovement.transform);
+        module.transform.SetParent(WorldMovement.Instance.transform, true);
         activeModules.Add(module);
 
         SpawnEnemiesInModule(module);

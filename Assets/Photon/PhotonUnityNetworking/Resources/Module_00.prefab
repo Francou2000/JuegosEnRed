@@ -956,6 +956,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1314648043794837424}
   - component: {fileID: -3531601621020411471}
+  - component: {fileID: -7900920404305052152}
   m_Layer: 0
   m_Name: Module_00
   m_TagString: Module
@@ -1004,6 +1005,18 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &-7900920404305052152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4750149719367727201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cfc5bef4358ef746a9348a00bfbb6d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5741787156461709922
 GameObject:
   m_ObjectHideFlags: 0
