@@ -47,6 +47,7 @@ public class ModuleManager : MonoBehaviourPun
         start.transform.SetParent(worldMovement.transform);
 
         activeModules.Add(start);
+        SpawnEnemiesInModule(start);
 
         // Add random modules
         for (int i = 1; i < activeModuleCount; i++)

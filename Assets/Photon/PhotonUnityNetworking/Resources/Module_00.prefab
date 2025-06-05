@@ -70,7 +70,7 @@ Transform:
   m_GameObject: {fileID: 1603865539900828268}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -14.5, y: 2.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 2451895389184534607}
   - component: {fileID: 3241089458085701921}
   - component: {fileID: 4605842919512992601}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_03
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -209,37 +209,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!1 &2123923267652460045
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3060654693936273070}
-  m_Layer: 0
-  m_Name: ModuleTopMarker
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3060654693936273070
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2123923267652460045}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.2, y: 8.67, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1314648043794837424}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2342342327716095015
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,7 +389,7 @@ GameObject:
   - component: {fileID: 3528230312280943431}
   - component: {fileID: 360637282673253942}
   - component: {fileID: 2316557587262425290}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_02
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -550,7 +519,7 @@ GameObject:
   - component: {fileID: 967538540764231788}
   - component: {fileID: 4055480491519715780}
   - component: {fileID: 5520660748565037396}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_00
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -1010,7 +979,6 @@ Transform:
   - {fileID: 9145749572420008581}
   - {fileID: 2862194722343286543}
   - {fileID: 4458186993294493925}
-  - {fileID: 3060654693936273070}
   - {fileID: 5584310340905765580}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1047,7 +1015,7 @@ GameObject:
   - component: {fileID: 6877192585331817834}
   - component: {fileID: 1465610607917171207}
   - component: {fileID: 8451308936380824349}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_00 (1)
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -1177,7 +1145,7 @@ GameObject:
   - component: {fileID: 2914393058331262647}
   - component: {fileID: 1560671334693523615}
   - component: {fileID: 6613817237553411380}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_02 (1)
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -1321,7 +1289,7 @@ Transform:
   m_GameObject: {fileID: 8056526577802362917}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -13, y: 8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1418,7 +1386,7 @@ GameObject:
   - component: {fileID: 5350042723308775457}
   - component: {fileID: 94025273154385156}
   - component: {fileID: 7860741185879863638}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_05
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -1711,7 +1679,7 @@ GameObject:
   - component: {fileID: 679320330178608549}
   - component: {fileID: 1094088799879853294}
   - component: {fileID: 2264433098642945466}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_01
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -1841,7 +1809,7 @@ GameObject:
   - component: {fileID: 61813856709325569}
   - component: {fileID: 966077667701490685}
   - component: {fileID: 7788304987628796839}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform_04
   m_TagString: Floor
   m_Icon: {fileID: 0}

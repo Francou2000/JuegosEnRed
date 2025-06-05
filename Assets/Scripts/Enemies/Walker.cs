@@ -7,7 +7,7 @@ public class Walker : EnemyBase
 {
     public float moveSpeed = 2f;
     public Transform groundCheck;
-    public float groundCheckDistance = 0.5f;
+    public float groundCheckDistance = 2f;
     public LayerMask groundLayer;
 
     private bool movingLeft = true;
@@ -20,8 +20,18 @@ public class Walker : EnemyBase
         rb.velocity = new Vector2(direction.x * moveSpeed, rb.velocity.y);
 
         bool groundAhead = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, groundLayer);
-
+        Debug.DrawRay(groundCheck.position, Vector2.down * groundCheckDistance, Color.red);
         if (!groundAhead)
+        {
+            Flip();
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        if (!collision.collider.CompareTag("Player") && !collision.collider.isTrigger)
         {
             Flip();
         }
