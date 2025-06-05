@@ -19,17 +19,12 @@ public class WorldMovement : MonoBehaviour
 
     public void StartGame()
     {
-        speed = 0.1f;
+        speed = -1f;
         isMoving = true;
     }
 
     public void StopGame()
     {
         isMoving = false;
-    }
-
-    public void IncreaseSpeed()
-    {
-        speed = speed * 2;
     }
 }

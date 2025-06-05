@@ -12,8 +12,12 @@ public class ModuleManager : MonoBehaviourPun
 
     [Header("Settings")]
     public int activeModuleCount = 3;
+    [SerializeField] private float moduleHeight = 20f;
+    [SerializeField] private float horizontalOffset = 11f;
 
     private List<GameObject> activeModules = new List<GameObject>();
+
+    [SerializeField] private WorldMovement worldMovement;
 
     private void Awake()
     {
@@ -30,7 +34,7 @@ public class ModuleManager : MonoBehaviourPun
 
         Debug.Log("Initializing modules...");
 
-        Vector3 spawnPos = Vector3.zero;
+        Vector3 spawnPos = new Vector3(horizontalOffset, 0f, 0f);
 
         if (startModule == null)
         {
@@ -40,6 +44,8 @@ public class ModuleManager : MonoBehaviourPun
 
         // Spawn starting module
         GameObject start = PhotonNetwork.Instantiate(startModule.name, spawnPos, Quaternion.identity);
+        start.transform.SetParent(worldMovement.transform);
+
         activeModules.Add(start);
 
         // Add random modules
@@ -52,17 +58,11 @@ public class ModuleManager : MonoBehaviourPun
 
     private Vector3 GetNextModuleTop()
     {
-        GameObject lastModule = activeModules[activeModules.Count - 1];
-        Transform lastTop = lastModule.transform.Find("ModuleTopMarker");
-
-        if (lastTop == null)
-        {
-            Debug.LogError($"ModuleTopMarker NOT found in: {lastModule.name}");
+        if (activeModules.Count == 0)
             return Vector3.zero;
-        }
 
-        Debug.Log($"Found ModuleTopMarker at: {lastTop.position} for {lastModule.name}");
-        return lastTop.position;
+        Vector3 lastPos = activeModules[activeModules.Count - 1].transform.position;
+        return lastPos + new Vector3(0f, moduleHeight, 0f);
     }
 
     private void AddRandomModule(Vector3 position)
@@ -74,8 +74,12 @@ public class ModuleManager : MonoBehaviourPun
         }
 
         GameObject prefab = modulePool[Random.Range(0, modulePool.Count)];
-        GameObject module = PhotonNetwork.Instantiate(prefab.name, position, Quaternion.identity);
-        Debug.Log($"Spawned module: {prefab.name} at {position}");
+
+        // Since we're using fixed module size, position is already adjusted
+        Vector3 spawnPosition = position;
+
+        GameObject module = PhotonNetwork.Instantiate(prefab.name, spawnPosition, Quaternion.identity);
+        module.transform.SetParent(worldMovement.transform);
         activeModules.Add(module);
 
         SpawnEnemiesInModule(module);
