@@ -70,22 +70,32 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
         if (!photonView.IsMine || gameEnded) return;
 
-        if (currentLives > 0)
-        {
-            currentLives--;
-            UIManager.Instance.UpdateLivesUI(currentLives);
-        }
+        currentLives--;
+        UIManager.Instance.UpdateLivesUI(currentLives);
 
         if (currentLives <= 0)
         {
             GameManager.Instance.photonView.RPC("RPC_ReportDeath", RpcTarget.MasterClient, PhotonNetwork.NickName);
         }
+        else
+        {
+            Respawn();
+        }
     }
 
-    [ContextMenu("GetID")]
-    public void PrintID()
+    private void Respawn()
     {
-        print(photonView.ViewID);
-        print(PhotonNetwork.NickName);
+        Transform[] spawnPoints = ModuleManager.Instance.GetCurrentPlayerSpawns();
+        if (spawnPoints.Length == 0)
+        {
+            Debug.LogError("[PlayerBasic] No spawn points found in current module.");
+            return;
+        }
+
+        // Choose a random or indexed spawn
+        Transform spawn = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+        transform.position = spawn.position;
+        playerRigidbody.velocity = Vector2.zero; // Cancel momentum
     }
 }
