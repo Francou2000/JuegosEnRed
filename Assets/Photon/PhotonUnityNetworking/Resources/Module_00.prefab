@@ -853,7 +853,7 @@ GameObject:
   - component: {fileID: -3531601621020411471}
   - component: {fileID: 7876439234703514779}
   - component: {fileID: 8914290957056783630}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Module_00
   m_TagString: Module
   m_Icon: {fileID: 0}

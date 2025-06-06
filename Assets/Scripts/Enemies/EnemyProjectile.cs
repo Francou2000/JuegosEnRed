@@ -21,8 +21,6 @@ public class EnemyProjectile : MonoBehaviourPun
             {
                 player.GetDamage();
             }
-
-            Destroy(gameObject);
         }
 
         Destroy(gameObject);  
