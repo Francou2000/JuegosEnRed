@@ -50,6 +50,7 @@ MonoBehaviour:
   - RPC_PlayerSpawned
   - RPC_StartGame
   - RPC_RequestDestroy
+  - RPC_AssignCurrentModule
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

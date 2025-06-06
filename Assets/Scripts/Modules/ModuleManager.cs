@@ -37,8 +37,11 @@ public class ModuleManager : MonoBehaviourPun
 
         // Create current module (start)
         currentModule = PhotonNetwork.Instantiate(startModule.name, spawnPos, Quaternion.identity);
-        currentModule.GetComponent<ModuleIdentity>().role = ModuleIdentity.Role.Start;
         SpawnEnemiesInModule(currentModule);
+
+        PhotonView moduleView = currentModule.GetComponent<PhotonView>();
+        photonView.RPC("RPC_AssignCurrentModule", RpcTarget.AllBuffered, moduleView.ViewID);
+
         if (currentModule == null)
         {
             Debug.LogError("[ModuleManager] Failed to instantiate currentModule!");
@@ -125,11 +128,7 @@ public class ModuleManager : MonoBehaviourPun
 
     public void TryShiftModule(GameObject entered)
     {
-        Debug.Log("[ModuleManager] TryShiftModule called by: " + entered.name);
-
         if (entered != nextModule) return;
-
-        Debug.Log("[ModuleManager] Shifting modules...");
 
         PhotonNetwork.Destroy(lastModule);
         lastModule = currentModule;
@@ -137,5 +136,16 @@ public class ModuleManager : MonoBehaviourPun
 
         Vector3 spawnPos = currentModule.transform.position + Vector3.up * moduleHeight;
         nextModule = AddRandomModule(spawnPos);
+    }
+
+    [PunRPC]
+    public void RPC_AssignCurrentModule(int viewID)
+    {
+        PhotonView view = PhotonView.Find(viewID);
+        if (view != null)
+        {
+            GameObject module = view.gameObject;
+            currentModule = module;
+        }
     }
 }
