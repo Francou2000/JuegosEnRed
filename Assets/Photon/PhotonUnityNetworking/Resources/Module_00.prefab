@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 315264865490156816}
   m_Layer: 0
   m_Name: SpawnPoint_02
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 2862194722343286543}
   m_Layer: 0
   m_Name: EnemySpawns
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 4605842919512992601}
   m_Layer: 3
   m_Name: Platform_03
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -220,7 +220,7 @@ GameObject:
   - component: {fileID: 8017053626308992610}
   m_Layer: 0
   m_Name: Platforms
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 3868930023455700084}
   m_Layer: 0
   m_Name: RightWall
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 2316557587262425290}
   m_Layer: 3
   m_Name: Platform_02
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -521,7 +521,7 @@ GameObject:
   - component: {fileID: 5520660748565037396}
   m_Layer: 3
   m_Name: Platform_00
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -649,7 +649,7 @@ GameObject:
   - component: {fileID: 4668416741356256179}
   m_Layer: 0
   m_Name: SpawnPoint_02
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -680,7 +680,7 @@ GameObject:
   - component: {fileID: 9145749572420008581}
   m_Layer: 0
   m_Name: MapLimits
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -714,7 +714,7 @@ GameObject:
   - component: {fileID: 9059430940419861954}
   m_Layer: 0
   m_Name: SpawnPoint_00
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -745,7 +745,7 @@ GameObject:
   - component: {fileID: 5644398861426894953}
   m_Layer: 0
   m_Name: Floor
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -777,7 +777,7 @@ GameObject:
   - component: {fileID: 6032883467708090905}
   m_Layer: 0
   m_Name: SpawnPoint_01
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -821,7 +821,7 @@ GameObject:
   - component: {fileID: 7235396870167882988}
   m_Layer: 0
   m_Name: SpawnPoint_01
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -852,6 +852,8 @@ GameObject:
   - component: {fileID: 1314648043794837424}
   - component: {fileID: -3531601621020411471}
   - component: {fileID: 2727329678108460134}
+  - component: {fileID: 7876439234703514779}
+  - component: {fileID: 8914290957056783630}
   m_Layer: 0
   m_Name: Module_00
   m_TagString: Module
@@ -912,6 +914,78 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   role: 1
+--- !u!61 &7876439234703514779
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4750149719367727201}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -11.037813, y: 4.514145}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 19.930286, y: 20.163275}
+  m_EdgeRadius: 0
+--- !u!50 &8914290957056783630
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4750149719367727201}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7
 --- !u!1 &5741787156461709922
 GameObject:
   m_ObjectHideFlags: 0
@@ -925,7 +999,7 @@ GameObject:
   - component: {fileID: 8451308936380824349}
   m_Layer: 3
   m_Name: Platform_00 (1)
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1055,7 +1129,7 @@ GameObject:
   - component: {fileID: 6613817237553411380}
   m_Layer: 3
   m_Name: Platform_02 (1)
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1183,7 +1257,7 @@ GameObject:
   - component: {fileID: 4458186993294493925}
   m_Layer: 0
   m_Name: PlayerSpawns
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1219,7 +1293,7 @@ GameObject:
   - component: {fileID: 4153546881308110976}
   m_Layer: 0
   m_Name: SpawnPoint_00
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1263,7 +1337,7 @@ GameObject:
   - component: {fileID: 2332316370123682298}
   m_Layer: 0
   m_Name: SpawnPoint_03
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1296,7 +1370,7 @@ GameObject:
   - component: {fileID: 7860741185879863638}
   m_Layer: 3
   m_Name: Platform_05
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1424,7 +1498,7 @@ GameObject:
   - component: {fileID: 2718554263947174157}
   m_Layer: 0
   m_Name: Walls
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1459,7 +1533,7 @@ GameObject:
   - component: {fileID: 8833969822903640017}
   m_Layer: 0
   m_Name: LeftWall
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1589,7 +1663,7 @@ GameObject:
   - component: {fileID: 2264433098642945466}
   m_Layer: 3
   m_Name: Platform_01
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1719,7 +1793,7 @@ GameObject:
   - component: {fileID: 7788304987628796839}
   m_Layer: 3
   m_Name: Platform_04
-  m_TagString: Module
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

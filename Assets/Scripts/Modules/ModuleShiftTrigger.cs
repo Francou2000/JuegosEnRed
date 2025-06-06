@@ -9,6 +9,7 @@ public class ModuleShiftTrigger : MonoBehaviour
         if (!Photon.Pun.PhotonNetwork.IsMasterClient) return;
         if (!other.CompareTag("Module")) return;
 
+        Debug.Log("[ModuleShiftTrigger] Triggered by: " + other.name);
         ModuleManager.Instance.TryShiftModule(other.gameObject);
     }
 }

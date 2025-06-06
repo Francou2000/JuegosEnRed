@@ -24,7 +24,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("[GameManager] MasterClient initializing modules...");
             ModuleManager.Instance.InitializeModules();
         }
 
@@ -49,7 +48,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawns.Length;
         Vector3 spawnPos = spawns[spawnIndex].position;
-        Debug.Log($"[GameManager] Spawning player at {spawnPos}...");
 
         GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity);
         PhotonNetwork.LocalPlayer.TagObject = player;
@@ -78,7 +76,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             Debug.LogError("[GameManager] CameraMover reference is missing!");
             return;
         }
-        Debug.Log("[GameManager] Starting camera.");
 
         cam.StartCamera();
     }

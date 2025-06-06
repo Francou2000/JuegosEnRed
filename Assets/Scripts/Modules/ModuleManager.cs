@@ -27,7 +27,6 @@ public class ModuleManager : MonoBehaviourPun
     public void InitializeModules()
     {
         if (!PhotonNetwork.IsMasterClient) return;
-        Debug.Log("[ModuleManager] Starting module initialization...");
 
         if (startModule == null)
         {
@@ -53,7 +52,6 @@ public class ModuleManager : MonoBehaviourPun
         // Create last module below (another copy of start module)
         Vector3 lastPos = spawnPos - Vector3.up * moduleHeight;
         lastModule = PhotonNetwork.Instantiate(startModule.name, lastPos, Quaternion.identity);
-        Debug.Log("[ModuleManager] Module initialization completed.");
     }
 
     private GameObject AddRandomModule(Vector3 position)
@@ -127,16 +125,17 @@ public class ModuleManager : MonoBehaviourPun
 
     public void TryShiftModule(GameObject entered)
     {
-        if (entered == nextModule)
-        {
-            Debug.Log("[ModuleManager] Shifting module references...");
+        Debug.Log("[ModuleManager] TryShiftModule called by: " + entered.name);
 
-            PhotonNetwork.Destroy(lastModule);
-            lastModule = currentModule;
-            currentModule = nextModule;
+        if (entered != nextModule) return;
 
-            Vector3 spawnPos = currentModule.transform.position + Vector3.up * moduleHeight;
-            nextModule = AddRandomModule(spawnPos);
-        }
+        Debug.Log("[ModuleManager] Shifting modules...");
+
+        PhotonNetwork.Destroy(lastModule);
+        lastModule = currentModule;
+        currentModule = nextModule;
+
+        Vector3 spawnPos = currentModule.transform.position + Vector3.up * moduleHeight;
+        nextModule = AddRandomModule(spawnPos);
     }
 }

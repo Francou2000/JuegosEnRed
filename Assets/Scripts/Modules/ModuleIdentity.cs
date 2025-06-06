@@ -10,14 +10,21 @@ public class ModuleIdentity : MonoBehaviourPun, IPunInstantiateMagicCallback
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        // MasterClient already knows what it spawned — skip
         if (PhotonNetwork.IsMasterClient) return;
 
-        if (role == Role.Start && ModuleManager.Instance != null)
+        if (role == Role.Start)
         {
+            StartCoroutine(WaitAndAssign());
+        }
+    }
+
+    private IEnumerator WaitAndAssign()
+    {
+        while (ModuleManager.Instance == null)
+            yield return null;
+
         Debug.Log("[ModuleIdentity] Assigning currentModule on client.");
         ModuleManager.Instance.AssignCurrentModule(this.gameObject);
-        }
     }
 }
 
