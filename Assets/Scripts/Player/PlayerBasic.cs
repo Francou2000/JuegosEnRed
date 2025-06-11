@@ -12,7 +12,8 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     private Collider2D playerCollider;
     private Rigidbody2D playerRigidbody;
-    private bool canJump;
+    private Animator playerAnimator;
+    public bool canJump = true;
 
     [Header("Health")]
     [SerializeField]private int maxLives = 3;
@@ -26,6 +27,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
         playerCollider = GetComponent<Collider2D>();
         playerRigidbody = GetComponent<Rigidbody2D>();
+        playerAnimator = GetComponent<Animator>();
         currentLives = maxLives;
 
         if (photonView.IsMine)
@@ -38,13 +40,15 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     void Update()
     {
         if (!photonView.IsMine || gameEnded) return;
-
         Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
         transform.position += movement;
-
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
+        Debug.unityLogger.Log("puede saltar: " +canJump);
+        if (Input.GetKeyDown(KeyCode.W) && canJump)
+        //if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
         {
+            Debug.Log("saltar");
             playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
+            playerAnimator.SetTrigger("Jump");
             canJump = false;
         }
     }
@@ -52,16 +56,38 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     public void ChangeDirection()
     {
         moveFactor *= -1;
+        if (moveFactor > 0)
+        {
+            transform.localScale = new Vector3(2, 2, 2);
+        }
+        else
+        {
+            transform.localScale = new Vector3(-2, 2, 2);
+        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
+        // Debug.Log(other.gameObject.name);
+        if (other.gameObject.layer==3)
+        {
+            
+            Debug.Log("chocando con layer 3");
+            canJump = true;
+        }
         if (!other.gameObject.CompareTag("Floor"))
         {
             ChangeDirection();
         }
-        else
+        // else
+        // {
+        //     canJump = true;
+        // }
+        if (other.gameObject.layer==3)
         {
+            
+            Debug.Log("chocando con layer 3");
             canJump = true;
         }
     }

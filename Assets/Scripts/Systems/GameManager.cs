@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void SpawnLocalPlayer()
     {
         Transform[] spawns = ModuleManager.Instance.GetCurrentPlayerSpawns();
+        Debug.Log(spawns.Length);
         if (spawns.Length == 0)
         {
             Debug.LogError("[GameManager] No spawn points found.");

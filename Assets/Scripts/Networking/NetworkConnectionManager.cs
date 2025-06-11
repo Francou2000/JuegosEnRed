@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -29,6 +30,15 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
         }
     }
 
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            Debug.Log("W");
+        }
+    }
+
     public void SetNickname(string nickname)
     {
         cachedNickname = nickname;
@@ -53,7 +63,7 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Photon Master Server.");
-        // Do not auto-join here — wait for JoinGame to be called
+        // Do not auto-join here ï¿½ wait for JoinGame to be called
     }
 
     public override void OnJoinedRoom()
