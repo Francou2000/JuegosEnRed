@@ -15,6 +15,9 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     private Animator playerAnimator;
     public bool canJump = true;
 
+    [SerializeField] private float groundCheckDistance = 0.6f;
+    [SerializeField] private LayerMask groundLayer;
+
     [Header("Health")]
     [SerializeField]private int maxLives = 3;
     private int currentLives;
@@ -53,6 +56,20 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (!photonView.IsMine || gameEnded) return;
+
+        Vector2 origin = transform.position;
+        Vector2 direction = Vector2.down;
+
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, groundCheckDistance, groundLayer);
+        canJump = hit.collider != null;
+
+        //Visual debug
+        Debug.DrawRay(origin, direction * groundCheckDistance, hit.collider ? Color.green : Color.red);
+    }
+
     public void ChangeDirection()
     {
         moveFactor *= -1;
@@ -68,27 +85,17 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     }
 
     private void OnCollisionEnter2D(Collision2D other)
-    {
+    {/*
         // Debug.Log(other.gameObject.name);
         if (other.gameObject.layer==3)
         {
             
             Debug.Log("chocando con layer 3");
             canJump = true;
-        }
+        }*/
         if (!other.gameObject.CompareTag("Floor"))
         {
             ChangeDirection();
-        }
-        // else
-        // {
-        //     canJump = true;
-        // }
-        if (other.gameObject.layer==3)
-        {
-            
-            Debug.Log("chocando con layer 3");
-            canJump = true;
         }
     }
 
@@ -108,7 +115,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
             Respawn();
         }
     }
-
+    
     private void Respawn()
     {
         Transform[] spawnPoints = ModuleManager.Instance.GetCurrentPlayerSpawns();

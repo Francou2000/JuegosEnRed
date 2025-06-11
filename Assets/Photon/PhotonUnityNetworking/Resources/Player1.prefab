@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 534264969629528831}
   - component: {fileID: -4684905744408094930}
   - component: {fileID: -1720214526401259676}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player1
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -131,6 +131,10 @@ MonoBehaviour:
   jumpForce: 3
   moveFactor: 1
   canJump: 1
+  groundCheckDistance: 1.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
   maxLives: 3
   gameEnded: 0
 --- !u!114 &5484113153652587157
