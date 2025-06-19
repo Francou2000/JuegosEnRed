@@ -9,7 +9,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance;
 
     [Header("References")]
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject player1Prefab;
+    [SerializeField] private GameObject player2Prefab;
     [SerializeField] private CameraMover cam;
 
     private int playersReady = 0;
@@ -51,7 +52,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawns.Length;
         Vector3 spawnPos = spawns[spawnIndex].position;
 
-        GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, Quaternion.identity);
+        GameObject prefabToUse = PhotonNetwork.IsMasterClient ? player1Prefab : player2Prefab;
+        GameObject player = PhotonNetwork.Instantiate(prefabToUse.name, spawnPos, Quaternion.identity);
         PhotonNetwork.LocalPlayer.TagObject = player;
 
         photonView.RPC("RPC_PlayerSpawned", RpcTarget.MasterClient);
