@@ -7,24 +7,31 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 {
     [Header("Stats")]
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpForce = 12f;
     [SerializeField] private float moveFactor;
+    [SerializeField] private float coyoteTime = 0.2f;
+    private float coyoteTimeCounter;
+
+    [Header("Jump Checks")]
+    [SerializeField] private Transform groundCheckPoint;
+    [SerializeField] private float groundCheckRadius = 0.1f;
+    [SerializeField] private LayerMask groundLayer;
+
+    [Header("Wall Check")]
+    [SerializeField] private Transform wallCheckPoint;
+    [SerializeField] private float wallCheckRadius = 0.15f;
+    [SerializeField] private LayerMask platformLayer;
+
+    [Header("Health")]
+    [SerializeField] private int maxLives = 3;
+    private int currentLives;
 
     private Collider2D playerCollider;
     private Rigidbody2D playerRigidbody;
     private Animator playerAnimator;
-    public bool canJump = true;
-
-    [SerializeField] private float groundCheckDistance = 0.6f;
-    [SerializeField] private LayerMask groundLayer;
-
-    [Header("Health")]
-    [SerializeField]private int maxLives = 3;
-    private int currentLives;
+    private UIManager uiManager;
 
     public bool gameEnded = false;
-
-    private UIManager uiManager;
 
     private IEnumerator Start()
     {
@@ -43,66 +50,64 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     void Update()
     {
         if (!photonView.IsMine || gameEnded) return;
+
         Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
         transform.position += movement;
-        Debug.unityLogger.Log("puede saltar: " + canJump);
-        if (Input.GetKeyDown(KeyCode.W) && canJump)
-            //if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
+
+        // Coyote jump handling
+        bool isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
+        if (isGrounded) coyoteTimeCounter = coyoteTime;
+        else coyoteTimeCounter -= Time.deltaTime;
+
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && coyoteTimeCounter > 0f)
         {
-            Debug.Log("saltar");
-            playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
+            playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             playerAnimator.SetTrigger("Jump");
-            canJump = false;
+            coyoteTimeCounter = 0f;
         }
 
-        //debug testing
+        // Wall detection
+        Vector2 wallCheckDirection = moveFactor > 0 ? Vector2.right : Vector2.left;
+        bool hitWall = Physics2D.OverlapCircle(wallCheckPoint.position, wallCheckRadius, platformLayer);
+
+        if (hitWall)
+        {
+            ChangeDirection();
+        }
+
+        // Debug: leave room
         if (Input.GetKeyDown(KeyCode.L))
         {
             LeftLobby();
-            Debug.Log("Se intenta dejar el lobby");
         }
-}
-
-    private void FixedUpdate()
-    {
-        if (!photonView.IsMine || gameEnded) return;
-
-        Vector2 origin = transform.position;
-        Vector2 direction = Vector2.down;
-
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, groundCheckDistance, groundLayer);
-        canJump = hit.collider != null;
-
-        //Visual debug
-        Debug.DrawRay(origin, direction * groundCheckDistance, hit.collider ? Color.green : Color.red);
     }
 
     public void ChangeDirection()
     {
         moveFactor *= -1;
-        if (moveFactor > 0)
-        {
-            transform.localScale = new Vector3(2, 2, 2);
-        }
-        else
-        {
-            transform.localScale = new Vector3(-2, 2, 2);
-        }
 
+        // Flip sprite based on direction
+        if (moveFactor > 0)
+            transform.localScale = new Vector3(2, 2, 2);
+        else
+            transform.localScale = new Vector3(-2, 2, 2);
+
+        playerRigidbody.velocity = new Vector2(moveFactor * moveSpeed, playerRigidbody.velocity.y);
+
+        // Send the new direction to all clients
+        photonView.RPC(nameof(RPC_ChangeDirectionVisual), RpcTarget.All, moveFactor);
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {/*
-        // Debug.Log(other.gameObject.name);
-        if (other.gameObject.layer==3)
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!photonView.IsMine || gameEnded) return;
+
+        foreach (ContactPoint2D contact in collision.contacts)
         {
-            
-            Debug.Log("chocando con layer 3");
-            canJump = true;
-        }*/
-        if (!other.gameObject.CompareTag("Floor"))
-        {
-            ChangeDirection();
+            if (contact.normal.y > 0.5f)
+            {
+                coyoteTimeCounter = coyoteTime; // Also refresh on land
+            }
         }
     }
 
@@ -123,10 +128,6 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         }
     }
 
-    public void LeftLobby()
-    {
-        GameManager.Instance.photonView.RPC("RPC_Disconnected",RpcTarget.All,PhotonNetwork.NickName);
-    }
     private void Respawn()
     {
         Transform[] spawnPoints = ModuleManager.Instance.GetCurrentPlayerSpawns();
@@ -136,10 +137,38 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
             return;
         }
 
-        // Choose a random or indexed spawn
         Transform spawn = spawnPoints[Random.Range(0, spawnPoints.Length)];
-
         transform.position = spawn.position;
-        playerRigidbody.velocity = Vector2.zero; // Cancel momentum
+        playerRigidbody.velocity = Vector2.zero;
+    }
+
+    public void LeftLobby()
+    {
+        GameManager.Instance.photonView.RPC("RPC_Disconnected", RpcTarget.All, PhotonNetwork.NickName);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (groundCheckPoint != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
+        }
+
+        if (wallCheckPoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(wallCheckPoint.position, wallCheckRadius);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_ChangeDirectionVisual(float direction)
+    {
+        // Flip sprite based on direction
+        if (direction > 0)
+            transform.localScale = new Vector3(2, 2, 2);
+        else
+            transform.localScale = new Vector3(-2, 2, 2);
     }
 }

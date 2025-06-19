@@ -1291,6 +1291,8 @@ MonoBehaviour:
   startModule: {fileID: 838806645501329234, guid: 5e5dee0f1f29cb74eb7f0b34189f6bb6, type: 3}
   modulePool:
   - {fileID: 4750149719367727201, guid: 9578c2eb6cbcd544b99fb6cf3ef0a819, type: 3}
+  - {fileID: 4750149719367727201, guid: edbb80a7a4360f7429b1d4310dfaa971, type: 3}
+  - {fileID: 4750149719367727201, guid: d5fcaf9aaf7c43b4e9df2e83a0ad1e4c, type: 3}
   moduleHeight: 20
   horizontalOffset: 11
 --- !u!4 &1361998947
