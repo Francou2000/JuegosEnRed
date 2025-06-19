@@ -1,6 +1,7 @@
 using System;
 using Photon.Pun;
 using Photon.Realtime;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NetworkConnectionManager : MonoBehaviourPunCallbacks
@@ -33,10 +34,7 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            Debug.Log("W");
-        }
+        
     }
 
     public void SetNickname(string nickname)
@@ -88,4 +86,12 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayers });
     }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        base.OnPlayerLeftRoom(otherPlayer);
+        GameManager.Instance.photonView.RPC("RPC_Disconnected",RpcTarget.All,PhotonNetwork.NickName);
+        Debug.LogWarning("UN JUGADOR ABANDONO LA SALA");
+    }
+    
 }

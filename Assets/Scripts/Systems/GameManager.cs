@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,7 +56,18 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         photonView.RPC("RPC_PlayerSpawned", RpcTarget.MasterClient);
     }
-
+    
+    
+    
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        base.OnPlayerLeftRoom(otherPlayer);
+        photonView.RPC("RPC_Disconnected",RpcTarget.All,otherPlayer.NickName);
+        Debug.LogWarning("UN JUGADOR ABANDONO LA SALA");
+    }
+    
+    
+    
     [PunRPC]
     private void RPC_PlayerSpawned()
     {
@@ -94,8 +106,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void RPC_GameOver(string loser)
     {
         bool isWinner = PhotonNetwork.NickName != loser;
-
+        UIManager.Instance.WriteMessage(PhotonNetwork.NickName);
         if (isWinner)
+            
             UIManager.Instance.ShowWinScreen();
         else
             UIManager.Instance.ShowLoseScreen();
@@ -105,6 +118,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         foreach (var p in players)
             p.gameEnded = true;
 
+        cam.StopCamera();
+        //mensaje fin del game
+        StartCoroutine(CallReturnToMenu());
+    }
+
+    [PunRPC]
+    public void RPC_Disconnected(string dcPlayer)
+    {
+        UIManager.Instance.ShowDisconnect(dcPlayer);
+        PlayerBasic[] players = FindObjectsOfType<PlayerBasic>();
+        foreach (var p in players)
+            p.gameEnded = true;
         cam.StopCamera();
         StartCoroutine(CallReturnToMenu());
     }

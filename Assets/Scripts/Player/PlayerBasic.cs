@@ -45,16 +45,23 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         if (!photonView.IsMine || gameEnded) return;
         Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
         transform.position += movement;
-        Debug.unityLogger.Log("puede saltar: " +canJump);
+        Debug.unityLogger.Log("puede saltar: " + canJump);
         if (Input.GetKeyDown(KeyCode.W) && canJump)
-        //if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
+            //if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && canJump)
         {
             Debug.Log("saltar");
             playerRigidbody.AddForce(new Vector2(0, jumpForce * 100));
             playerAnimator.SetTrigger("Jump");
             canJump = false;
         }
-    }
+
+        //debug testing
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LeftLobby();
+            Debug.Log("Se intenta dejar el lobby");
+        }
+}
 
     private void FixedUpdate()
     {
@@ -115,7 +122,11 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
             Respawn();
         }
     }
-    
+
+    public void LeftLobby()
+    {
+        GameManager.Instance.photonView.RPC("RPC_Disconnected",RpcTarget.All,PhotonNetwork.NickName);
+    }
     private void Respawn()
     {
         Transform[] spawnPoints = ModuleManager.Instance.GetCurrentPlayerSpawns();

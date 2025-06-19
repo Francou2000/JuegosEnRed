@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,6 +12,8 @@ public class UIManager : MonoBehaviour
     [Header("Panels")]
     public GameObject winPanel;
     public GameObject losePanel;
+    public GameObject disconnectPannel;
+    public TextMeshProUGUI playerNick;
 
     [Header("Lives UI")]
     public GameObject[] lifeHearts;
@@ -42,6 +46,20 @@ public class UIManager : MonoBehaviour
     public void ShowWinScreen()
     {
         winPanel.SetActive(true);
+    }
+
+    public void ShowDisconnect(string text)
+    {
+        disconnectPannel.SetActive(true);
+        playerNick.text = text;
+    }
+
+    public void WriteMessage(string text)
+    {
+        playerNick.text = text;
+        //winPanel.GetComponent<TextMeshPro>().text = text + "win";
+        //losePanel.GetComponent<TextMeshPro>().text = text + "lose";
+
     }
 
     public void ShowLoseScreen()
