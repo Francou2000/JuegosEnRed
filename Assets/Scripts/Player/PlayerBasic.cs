@@ -2,6 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UIElements;
 using System.Collections;
+using Photon.Realtime;
 
 public class PlayerBasic : MonoBehaviourPunCallbacks
 {
@@ -10,6 +11,8 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     [SerializeField] private float jumpForce = 12f;
     [SerializeField] private float moveFactor;
     [SerializeField] private float coyoteTime = 0.2f;
+    private string cachedNickname;
+    private string cachedRoomName;
     private float coyoteTimeCounter;
 
     [Header("Jump Checks")]
@@ -39,6 +42,8 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         playerRigidbody = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
         currentLives = maxLives;
+        cachedNickname = PhotonNetwork.NickName;
+        cachedRoomName = PhotonNetwork.CurrentRoom.Name;
 
         if (photonView.IsMine)
         {
@@ -78,7 +83,19 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         // Debug: leave room
         if (Input.GetKeyDown(KeyCode.L))
         {
-            LeftLobby();
+            
+            //LeftLobby();
+
+            Player kick = PhotonNetwork.CurrentRoom.GetPlayer(2);
+            PlayerBasic[] players = FindObjectsOfType<PlayerBasic>();
+            foreach (var p in players)
+                if (!p.name.Equals(cachedNickname))
+                {
+                    //p.LeftLobby();
+                    GameManager.Instance.photonView.RPC("RPC_KickPlayer2",RpcTarget.Others);
+                    PhotonNetwork.CloseConnection(kick);
+                    Debug.LogError("DESCONECTADO KICK "+ kick.NickName + " id "+ kick.ActorNumber);
+                }
         }
     }
 
@@ -144,7 +161,26 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
 
     public void LeftLobby()
     {
-        GameManager.Instance.photonView.RPC("RPC_Disconnected", RpcTarget.All, PhotonNetwork.NickName);
+        //PhotonNetwork.LeaveRoom();
+        OnDisconnected(DisconnectCause.DisconnectByClientLogic);
+        //GameManager.Instance.photonView.RPC("RPC_Disconnected", RpcTarget.All, PhotonNetwork.NickName);
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("ON DISCONNECTED ENTER");
+        base.OnDisconnected(cause);
+        
+        PhotonNetwork.ReconnectAndRejoin();
+        Debug.Log("INTENTANDO RECONECTAR ..." + "\n " + PhotonNetwork.CountOfPlayers);
+        //PhotonNetwork.RejoinRoom(cachedRoomName);
+        
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        base.OnPlayerLeftRoom(otherPlayer);
+        Debug.LogWarning("SE DESCONECTO EL OTRO PLAYER WEON " + otherPlayer.NickName +"/n"+ otherPlayer.ActorNumber +"/n"+otherPlayer.HasRejoined);
     }
 
     private void OnDrawGizmosSelected()

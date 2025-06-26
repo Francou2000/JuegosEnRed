@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     public GameObject winPanel;
     public GameObject losePanel;
     public GameObject disconnectPannel;
+    public GameObject disconnectBackground;
     public TextMeshProUGUI playerNick;
 
     [Header("Lives UI")]
@@ -51,7 +52,15 @@ public class UIManager : MonoBehaviour
     public void ShowDisconnect(string text)
     {
         disconnectPannel.SetActive(true);
+        disconnectBackground.SetActive(true);
         playerNick.text = text;
+    }
+
+    public void HideDisconect()
+    {
+        disconnectPannel.SetActive(false);
+        disconnectBackground.SetActive(false);
+        playerNick.text = "";
     }
 
     public void WriteMessage(string text)

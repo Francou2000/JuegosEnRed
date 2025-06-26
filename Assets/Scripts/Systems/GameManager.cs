@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject player1Prefab;
     [SerializeField] private GameObject player2Prefab;
     [SerializeField] private CameraMover cam;
+    private bool reconnected = false;
+    private string dcPlayer;
 
     private int playersReady = 0;
 
@@ -23,10 +25,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         if (!PhotonNetwork.IsConnectedAndReady) return;
-
+        PhotonNetwork.EnableCloseConnection = true;
         if (PhotonNetwork.IsMasterClient)
         {
             ModuleManager.Instance.InitializeModules();
+            
         }
 
         StartCoroutine(WaitThenSpawnPlayer());
@@ -58,14 +61,37 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         photonView.RPC("RPC_PlayerSpawned", RpcTarget.MasterClient);
     }
-    
-    
-    
+
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Debug.LogWarning("ON PLAYER ENTERED ROOM" + newPlayer.HasRejoined);
+        Debug.LogWarning(newPlayer.ToString());
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.LogWarning("UN JUGADOR INGRESO");
+            if (newPlayer.NickName.Equals(dcPlayer))
+            {
+                reconnected = true;
+                photonView.RPC("RPC_Reconnected",RpcTarget.All);
+                Debug.LogWarning("SE RECONECTO EL MISMO WEONNN");
+                
+            }
+        }
+        else
+        {
+            Debug.LogError("No soy master client");
+        }
+       
+
+    }
+
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
+        dcPlayer = otherPlayer.NickName;
         photonView.RPC("RPC_Disconnected",RpcTarget.All,otherPlayer.NickName);
-        Debug.LogWarning("UN JUGADOR ABANDONO LA SALA");
+        Debug.LogWarning("UN JUGADOR ABANDONO LA SALA (G.M)");
     }
     
     
@@ -126,6 +152,34 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
+    public void RPC_Reconnected()
+    {
+        PlayerBasic[] players = FindObjectsOfType<PlayerBasic>();
+        foreach (var p in players)
+            p.gameEnded = false;
+        cam.StartCamera();
+        Debug.LogError("FUNCIONA CABRON");
+        UIManager.Instance.HideDisconect();
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            SpawnLocalPlayer();
+            Debug.LogWarning("no soy masterclient");
+        }
+        else
+        {
+            Debug.LogWarning("soy el rayo mcqueen");
+            
+        }
+    }
+
+    [PunRPC]
+    public void RPC_KickPlayer2()
+    {
+        PhotonNetwork.LeaveRoom();
+        Debug.Log("TE KICKEARON MI PANA");
+    }
+    
+    [PunRPC]
     public void RPC_Disconnected(string dcPlayer)
     {
         UIManager.Instance.ShowDisconnect(dcPlayer);
@@ -138,9 +192,17 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private IEnumerator CallReturnToMenu()
     {
-        yield return new WaitForSeconds(5f);
+        Debug.LogError("Se detecto desconeccion, tiempo de vida para cerrar sesion:" +PhotonNetwork.CurrentRoom.PlayerTtl/1000);
+        yield return new WaitForSeconds(10f);
+        //yield return new WaitForSeconds(PhotonNetwork.CurrentRoom.PlayerTtl/1000);
 
-        if (PhotonNetwork.InRoom)
+        if (reconnected)
+        {
+            //photonView.RPC("RPC_Reconnected",RpcTarget.All);
+            Debug.Log("SE CANCELA LEAVING ROOM");
+        }
+
+        if (PhotonNetwork.InRoom && reconnected==false)
         {
             PhotonNetwork.AutomaticallySyncScene = false;
             PhotonNetwork.LeaveRoom();
