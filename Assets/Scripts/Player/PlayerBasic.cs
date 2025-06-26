@@ -10,7 +10,6 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce = 12f;
     [SerializeField] private float moveFactor;
-    [SerializeField] private float coyoteTime = 0.2f;
 
     private string cachedNickname;
     private string cachedRoomName;
@@ -54,9 +53,6 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         // Movement
         Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
         transform.position += movement;
-
-        // Ground check
-        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
 
         // Coyote timer
         if (isGrounded)

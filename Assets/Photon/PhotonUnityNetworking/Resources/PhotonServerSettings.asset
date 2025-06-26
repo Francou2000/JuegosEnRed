@@ -55,6 +55,7 @@ MonoBehaviour:
   - RPC_ChangeDirectionVisual
   - RPC_Reconnected
   - RPC_KickPlayer2
+  - RPC_PlayAnimation
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
