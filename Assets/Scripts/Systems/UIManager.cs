@@ -66,9 +66,6 @@ public class UIManager : MonoBehaviour
     public void WriteMessage(string text)
     {
         playerNick.text = text;
-        //winPanel.GetComponent<TextMeshPro>().text = text + "win";
-        //losePanel.GetComponent<TextMeshPro>().text = text + "lose";
-
     }
 
     public void ShowLoseScreen()

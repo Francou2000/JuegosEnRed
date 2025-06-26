@@ -81,7 +81,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
                     //p.LeftLobby();
                     GameManager.Instance.photonView.RPC("RPC_KickPlayer2",RpcTarget.Others);
                     PhotonNetwork.CloseConnection(kick);
-                    Debug.LogError("DESCONECTADO KICK "+ kick.NickName + " id "+ kick.ActorNumber);
+                    Debug.LogError("Kicked player: "+ kick.NickName + " id "+ kick.ActorNumber);
                 }
         }
     }
@@ -94,7 +94,7 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     private void Jump()
     {
         playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        photonView.RPC(nameof(RPC_PlayAnimation), RpcTarget.All, "Jump");
+        photonView.RPC("RPC_PlayAnimation", RpcTarget.All, "Jump");
     }
 
     public void TryChangeDirection()
@@ -120,19 +120,6 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
         float scaleX = Mathf.Sign(direction) * 2f;
         transform.localScale = new Vector3(scaleX, 2f, 2f);
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (!photonView.IsMine || gameEnded) return;
-
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f)
-            {
-                coyoteTimeCounter = coyoteTime; // Also refresh on land
-            }
-        }
     }
 
     public void GetDamage()
@@ -166,28 +153,22 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         playerRigidbody.velocity = Vector2.zero;
     }
 
-    public void LeftLobby()
-    {
-        //PhotonNetwork.LeaveRoom();
-        OnDisconnected(DisconnectCause.DisconnectByClientLogic);
-        //GameManager.Instance.photonView.RPC("RPC_Disconnected", RpcTarget.All, PhotonNetwork.NickName);
-    }
-
+    /*
     public override void OnDisconnected(DisconnectCause cause)
     {
         Debug.Log("ON DISCONNECTED ENTER");
         base.OnDisconnected(cause);
         
         PhotonNetwork.ReconnectAndRejoin();
-        Debug.Log("INTENTANDO RECONECTAR ..." + "\n " + PhotonNetwork.CountOfPlayers);
-        //PhotonNetwork.RejoinRoom(cachedRoomName);
-        
-    }
+        Debug.Log("T ..." + "\n " + PhotonNetwork.CountOfPlayers);
+        //PhotonNetwork.RejoinRoom(cachedRoomName);        
+    }*/
 
+    //Debug
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
-        Debug.LogWarning("SE DESCONECTO EL OTRO PLAYER WEON " + otherPlayer.NickName +"/n"+ otherPlayer.ActorNumber +"/n"+otherPlayer.HasRejoined);
+        Debug.LogWarning("Other player disconnected: " + otherPlayer.NickName +"/n"+ otherPlayer.ActorNumber +"/n"+otherPlayer.HasRejoined);
     }
 
     [PunRPC]

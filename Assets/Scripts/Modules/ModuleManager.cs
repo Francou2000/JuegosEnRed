@@ -33,6 +33,7 @@ public class ModuleManager : MonoBehaviourPun
             Debug.LogError("[ModuleManager] startModule is not assigned!");
             return;
         }
+
         Vector3 spawnPos = new Vector3(horizontalOffset, 0f, 0f);
 
         // Create current module (start)
@@ -119,11 +120,6 @@ public class ModuleManager : MonoBehaviourPun
             spawns[i] = spawnParent.GetChild(i);
 
         return spawns;
-    }
-
-    public void AssignCurrentModule(GameObject module)
-    {
-        currentModule = module;
     }
 
     public void TryShiftModule(GameObject entered)

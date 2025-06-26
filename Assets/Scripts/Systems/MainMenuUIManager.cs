@@ -46,7 +46,9 @@ public class MainMenuUIManager : MonoBehaviour
         NetworkConnectionManager.Instance.SetRoomID(roomID);
         NetworkConnectionManager.Instance.JoinRoom();
     }
-    
+
+    /*
+    //Used for debugging
     private void ReconnectRoom()
     {
         string nickname = nicknameInput.text.Trim().ToUpper();
@@ -58,7 +60,7 @@ public class MainMenuUIManager : MonoBehaviour
         NetworkConnectionManager.Instance.SetNickname(nickname);
         NetworkConnectionManager.Instance.SetRoomID(roomID);
         NetworkConnectionManager.Instance.ReconnectRoomWithID();
-    }
+    }*/
 
     private void OnConnectClicked()
     {

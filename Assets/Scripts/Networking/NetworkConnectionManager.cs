@@ -34,16 +34,11 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-    private void Update()
-    {
-        
-    }
-
     public void SetNickname(string nickname)
     {
         cachedNickname = nickname;
     } 
+
     public void SetRoomID(string ID)
     {
         roomID = ID;
@@ -86,7 +81,7 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Photon Master Server.");
-        // Do not auto-join here � wait for JoinGame to be called
+        // Do not auto-join here  wait for JoinGame to be called
     }
 
     public override void OnJoinedRoom()
@@ -119,12 +114,11 @@ public class NetworkConnectionManager : MonoBehaviourPunCallbacks
     {
         base.OnPlayerLeftRoom(otherPlayer);
         GameManager.Instance.photonView.RPC("RPC_Disconnected",RpcTarget.All,PhotonNetwork.NickName);
-        Debug.LogWarning("UN JUGADOR ABANDONO LA SALA");
+        Debug.LogWarning("A player disconnected");
     }
 
     public void ReconnectRoomWithID()
     {
         PhotonNetwork.RejoinRoom(roomID);
     }
-    
 }
