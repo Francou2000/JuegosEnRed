@@ -11,19 +11,14 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     [SerializeField] private float jumpForce = 12f;
     [SerializeField] private float moveFactor;
     [SerializeField] private float coyoteTime = 0.2f;
+
     private string cachedNickname;
     private string cachedRoomName;
+
+    [Header("Coyote Time")]
+    [SerializeField] private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
-
-    [Header("Jump Checks")]
-    [SerializeField] private Transform groundCheckPoint;
-    [SerializeField] private float groundCheckRadius = 0.1f;
-    [SerializeField] private LayerMask groundLayer;
-
-    [Header("Wall Check")]
-    [SerializeField] private Transform wallCheckPoint;
-    [SerializeField] private float wallCheckRadius = 0.15f;
-    [SerializeField] private LayerMask platformLayer;
+    private bool isGrounded = false;
 
     [Header("Health")]
     [SerializeField] private int maxLives = 3;
@@ -56,28 +51,24 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
     {
         if (!photonView.IsMine || gameEnded) return;
 
+        // Movement
         Vector3 movement = new Vector3(moveFactor, 0, 0) * moveSpeed * Time.deltaTime;
         transform.position += movement;
 
-        // Coyote jump handling
-        bool isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
-        if (isGrounded) coyoteTimeCounter = coyoteTime;
-        else coyoteTimeCounter -= Time.deltaTime;
+        // Ground check
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
 
+        // Coyote timer
+        if (isGrounded)
+            coyoteTimeCounter = coyoteTime;
+        else
+            coyoteTimeCounter -= Time.deltaTime;
+
+        // Jump
         if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && coyoteTimeCounter > 0f)
         {
-            playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            playerAnimator.SetTrigger("Jump");
+            Jump();
             coyoteTimeCounter = 0f;
-        }
-
-        // Wall detection
-        Vector2 wallCheckDirection = moveFactor > 0 ? Vector2.right : Vector2.left;
-        bool hitWall = Physics2D.OverlapCircle(wallCheckPoint.position, wallCheckRadius, platformLayer);
-
-        if (hitWall)
-        {
-            ChangeDirection();
         }
 
         // Debug: leave room
@@ -99,20 +90,40 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         }
     }
 
+    public void SetGrounded(bool grounded)
+    {
+        isGrounded = grounded;
+    }
+
+    private void Jump()
+    {
+        playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        photonView.RPC(nameof(RPC_PlayAnimation), RpcTarget.All, "Jump");
+    }
+
+    public void TryChangeDirection()
+    {
+        ChangeDirection();
+    }
+
     public void ChangeDirection()
     {
         moveFactor *= -1;
 
-        // Flip sprite based on direction
-        if (moveFactor > 0)
-            transform.localScale = new Vector3(2, 2, 2);
-        else
-            transform.localScale = new Vector3(-2, 2, 2);
+        // Flip locally
+        FlipSprite(moveFactor);
 
+        // Apply movement direction
         playerRigidbody.velocity = new Vector2(moveFactor * moveSpeed, playerRigidbody.velocity.y);
 
-        // Send the new direction to all clients
-        photonView.RPC(nameof(RPC_ChangeDirectionVisual), RpcTarget.All, moveFactor);
+        // Sync flip on all clients
+        photonView.RPC("RPC_ChangeDirectionVisual", RpcTarget.Others, moveFactor);
+    }
+
+    private void FlipSprite(float direction)
+    {
+        float scaleX = Mathf.Sign(direction) * 2f;
+        transform.localScale = new Vector3(scaleX, 2f, 2f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -183,28 +194,15 @@ public class PlayerBasic : MonoBehaviourPunCallbacks
         Debug.LogWarning("SE DESCONECTO EL OTRO PLAYER WEON " + otherPlayer.NickName +"/n"+ otherPlayer.ActorNumber +"/n"+otherPlayer.HasRejoined);
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        if (groundCheckPoint != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
-        }
-
-        if (wallCheckPoint != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(wallCheckPoint.position, wallCheckRadius);
-        }
-    }
-
     [PunRPC]
     private void RPC_ChangeDirectionVisual(float direction)
     {
-        // Flip sprite based on direction
-        if (direction > 0)
-            transform.localScale = new Vector3(2, 2, 2);
-        else
-            transform.localScale = new Vector3(-2, 2, 2);
+        FlipSprite(direction);
+    }
+
+    [PunRPC]
+    public void RPC_PlayAnimation(string triggerName)
+    {
+        playerAnimator.SetTrigger(triggerName);
     }
 }
